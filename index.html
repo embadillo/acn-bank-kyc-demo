@@ -49,6 +49,32 @@
 <body>
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const kycRequestId = params.get("kyc_request_id");
+    const customerDocId = params.get("customer_doc_id");
+
+    function sendKycContinuationMessage() {
+      if (!kycRequestId) {
+        return;
+      }
+
+      const message =
+        "continue_kyc_upload:" +
+        kycRequestId +
+        ":" +
+        (customerDocId || "");
+
+      if (
+        window.chatSdk &&
+        typeof window.chatSdk.sendMessage === "function"
+      ) {
+        window.chatSdk.sendMessage(message);
+        return;
+      }
+
+      console.warn("chatSdk.sendMessage is not available.");
+    }
+
     window.addEventListener("chat-messenger-loaded", () => {
       chatSdk.registerContext(
         chatSdk.prebuilts.ces.createContext({
@@ -61,6 +87,10 @@
           }
         })
       );
+
+      setTimeout(() => {
+        sendKycContinuationMessage();
+      }, 2000);
     });
   </script>
 

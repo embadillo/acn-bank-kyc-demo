@@ -53,27 +53,10 @@
     const kycRequestId = params.get("kyc_request_id");
     const customerDocId = params.get("customer_doc_id");
 
-    function sendKycContinuationMessage() {
-      if (!kycRequestId) {
-        return;
-      }
-
-      const message =
-        "continue_kyc_upload:" +
-        kycRequestId +
-        ":" +
-        (customerDocId || "");
-
-      if (
-        window.chatSdk &&
-        typeof window.chatSdk.sendMessage === "function"
-      ) {
-        window.chatSdk.sendMessage(message);
-        return;
-      }
-
-      console.warn("chatSdk.sendMessage is not available.");
-    }
+    console.log("KYC URL params:", {
+      kyc_request_id: kycRequestId,
+      customer_doc_id: customerDocId
+    });
 
     window.addEventListener("chat-messenger-loaded", () => {
       chatSdk.registerContext(
@@ -81,16 +64,14 @@
           deploymentName:
             "projects/483471568825/locations/us/apps/d61ad730-4835-43e8-93d5-3159bb492e08/deployments/bf58b863-2526-48c2-bb6e-03d9613527f7",
 
+          enableWelcomeEvent: true,
+
           tokenBroker: {
             enableTokenBroker: true,
             enableRecaptcha: false
           }
         })
       );
-
-      setTimeout(() => {
-        sendKycContinuationMessage();
-      }, 2000);
     });
   </script>
 

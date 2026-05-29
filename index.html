@@ -59,18 +59,44 @@
     });
 
     window.addEventListener("chat-messenger-loaded", () => {
-      chatSdk.registerContext(
-        chatSdk.prebuilts.ces.createContext({
-          deploymentName:
-            "projects/483471568825/locations/us/apps/d61ad730-4835-43e8-93d5-3159bb492e08/deployments/bf58b863-2526-48c2-bb6e-03d9613527f7",
+      console.log("chatSdk keys:", Object.keys(chatSdk));
 
-          enableWelcomeEvent: true,
+      const contextConfig = {
+        deploymentName:
+          "projects/483471568825/locations/us/apps/d61ad730-4835-43e8-93d5-3159bb492e08/deployments/bf58b863-2526-48c2-bb6e-03d9613527f7",
 
-          tokenBroker: {
-            enableTokenBroker: true,
-            enableRecaptcha: false
+        enableWelcomeEvent: true,
+
+        tokenBroker: {
+          enableTokenBroker: true,
+          enableRecaptcha: false
+        }
+      };
+
+      if (kycRequestId) {
+        contextConfig.queryParams = {
+          parameters: {
+            kyc_request_id: kycRequestId,
+            customer_doc_id: customerDocId || ""
           }
-        })
+        };
+
+        contextConfig.sessionId = "kyc-" + kycRequestId;
+      }
+
+      console.log("CES context config:", contextConfig);
+
+      try {
+        console.log(
+          "createContext sample:",
+          chatSdk.prebuilts.ces.createContext(contextConfig)
+        );
+      } catch (e) {
+        console.log("createContext inspection failed:", e);
+      }
+
+      chatSdk.registerContext(
+        chatSdk.prebuilts.ces.createContext(contextConfig)
       );
     });
   </script>
